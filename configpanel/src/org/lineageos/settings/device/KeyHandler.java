@@ -35,6 +35,7 @@ import android.os.PowerManager.WakeLock;
 import android.os.SystemClock;
 import android.os.Vibrator;
 import android.provider.Settings;
+import android.service.notification.ZenModeConfig;
 import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.KeyEvent;
@@ -151,6 +152,14 @@ public class KeyHandler implements DeviceKeyHandler {
         }
 
         if (isSliderModeSupported) {
+            ZenModeConfig zmc = mNotificationManager.getZenModeConfig();
+            int len = zmc.automaticRules.size();
+            for (int i = 0; i < len; i++) {
+                if (zmc.automaticRules.valueAt(i).isAutomaticActive()) {
+                    return null;
+                }
+            }
+
             if (scanCode == MODE_VIBRATION) {
                 mNotificationManager.setZenMode(Settings.Global.ZEN_MODE_OFF, null, TAG);
                 mAudioManager.setRingerModeInternal(AudioManager.RINGER_MODE_VIBRATE);
